@@ -1,13 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:qrphototaker/qr_scanner_bloc.dart';
 import 'dart:io';
+
+import 'camera_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final cameras = await availableCameras();
-  runApp(MyApp(cameras: cameras));
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => CameraBloc(cameras)),
+        BlocProvider(create: (_) => QRScannerBloc()),
+      ],
+      child: MyApp(cameras: [],),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -46,7 +57,7 @@ class HomePage extends StatelessWidget {
               onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CameraPage(cameras: cameras),
+                  builder: (context) => CameraPage(),
                 ),
               ),
               child: Text('Take Photo'),
@@ -68,76 +79,40 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class CameraPage extends StatefulWidget {
-  final List<CameraDescription> cameras;
-
-  const CameraPage({required this.cameras});
-
-  @override
-  State<CameraPage> createState() => _CameraPageState();
-}
-
-class _CameraPageState extends State<CameraPage> {
-  late CameraController _controller;
-  late Future<void> _initializeControllerFuture;
-  XFile? _image;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = CameraController(
-      widget.cameras.first,
-      ResolutionPreset.high,
-    );
-    _initializeControllerFuture = _controller.initialize();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  Future<void> _takePhoto() async {
-    try {
-      await _initializeControllerFuture;
-      final image = await _controller.takePicture();
-      setState(() {
-        _image = image;
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
-
+class CameraPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final cameraBloc = BlocProvider.of<CameraBloc>(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Take Photo'),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: FutureBuilder(
-              future: _initializeControllerFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return CameraPreview(_controller);
-                } else {
-                  return Center(child: CircularProgressIndicator());
-                }
-              },
-            ),
-          ),
-          if (_image != null) ...[
-            Image.file(File(_image!.path)),
-          ],
-          ElevatedButton(
-            onPressed: _takePhoto,
-            child: Text('Capture'),
-          ),
-        ],
+      appBar: AppBar(title: Text('Take Photo')),
+      body: BlocBuilder<CameraBloc, CameraState>(
+        builder: (context, state) {
+          if (state is CameraInitial) {
+            cameraBloc.add(InitializeCamera());
+            return Center(child: CircularProgressIndicator());
+          } else if (state is CameraInitialized) {
+            return Column(
+              children: [
+                Expanded(child: CameraPreview(state.controller)),
+                ElevatedButton(
+                  onPressed: () => cameraBloc.add(TakePhoto()),
+                  child: Text('Capture'),
+                ),
+              ],
+            );
+          } else if (state is PhotoCaptured) {
+            return Column(
+              children: [
+                Expanded(child: Image.file(File(state.photo.path))),
+                ElevatedButton(
+                  onPressed: () => cameraBloc.add(InitializeCamera()),
+                  child: Text('Retake'),
+                ),
+              ],
+            );
+          }
+          return Center(child: Text('Unknown State'));
+        },
       ),
     );
   }
@@ -146,18 +121,41 @@ class _CameraPageState extends State<CameraPage> {
 class QRScannerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final qrScannerBloc = BlocProvider.of<QRScannerBloc>(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Scan QR Code'),
-      ),
-      body: MobileScanner(
-        onDetect: (capture) {
-          final List<Barcode> barcodes = capture.barcodes;
-          for (final barcode in barcodes) {
-            debugPrint('Barcode found! ${barcode.rawValue}');
-          }
-        },
+      appBar: AppBar(title: Text('Scan QR Code')),
+      body: Stack(
+        children: [
+          MobileScanner(
+            onDetect: (capture) {
+              final barcodes = capture.barcodes;
+              for (final barcode in barcodes) {
+                qrScannerBloc.add(QRCodeDetected(barcode));
+              }
+            },
+          ),
+          BlocBuilder<QRScannerBloc, QRScannerState>(
+            builder: (context, state) {
+              if (state is QRCodeScanned) {
+                return Center(
+                  child: AlertDialog(
+                    title: Text('QR Code Found'),
+                    content: Text(state.qrCode),
+                    actions: [
+                      ElevatedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text('OK'),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              return Container();
+            },
+          ),
+        ],
       ),
     );
   }
 }
+
