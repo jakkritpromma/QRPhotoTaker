@@ -41,3 +41,15 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+ios/build/XCBuildData/8b69f7a9e4456fbb2e7d924d42c43110.xcbuilddata/build-request.json
+ios/build/XCBuildData/8b69f7a9e4456fbb2e7d924d42c43110.xcbuilddata/description.msgpack
+ios/build/XCBuildData/8b69f7a9e4456fbb2e7d924d42c43110.xcbuilddata/manifest.json
+ios/build/XCBuildData/8b69f7a9e4456fbb2e7d924d42c43110.xcbuilddata/target-graph.txt
+ios/build/XCBuildData/8b69f7a9e4456fbb2e7d924d42c43110.xcbuilddata/task-store.msgpack
+linux/flutter/generated_plugin_registrant.cc
+linux/flutter/generated_plugin_registrant.h
+linux/flutter/generated_plugins.cmake
+macos/Podfile
+macos/Flutter/GeneratedPluginRegistrant.swift
+macos/Flutter/ephemeral/Flutter-Generated.xcconfig
+macos/Flutter/ephemeral/flutter_export_environment.sh

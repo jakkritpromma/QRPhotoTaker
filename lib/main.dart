@@ -16,7 +16,9 @@ void main() async {
         BlocProvider(create: (_) => CameraBloc(cameras)),
         BlocProvider(create: (_) => QRScannerBloc()),
       ],
-      child: MyApp(cameras: [],),
+      child: MyApp(
+        cameras: [],
+      ),
     ),
   );
 }
@@ -93,7 +95,12 @@ class CameraPage extends StatelessWidget {
           } else if (state is CameraInitialized) {
             return Column(
               children: [
-                Expanded(child: CameraPreview(state.controller)),
+                // Horizontally center the CameraPreview and allow it to expand vertically
+                Expanded(
+                  child: Center(
+                    child: CameraPreview(state.controller),
+                  ),
+                ),
                 ElevatedButton(
                   onPressed: () => cameraBloc.add(TakePhoto()),
                   child: Text('Capture'),
@@ -103,7 +110,7 @@ class CameraPage extends StatelessWidget {
           } else if (state is PhotoCaptured) {
             return Column(
               children: [
-                Expanded(child: Image.file(File(state.photo.path))),
+                Expanded(child: Center(child: Image.file(File(state.photo.path)))),
                 ElevatedButton(
                   onPressed: () => cameraBloc.add(InitializeCamera()),
                   child: Text('Retake'),
@@ -158,4 +165,3 @@ class QRScannerPage extends StatelessWidget {
     );
   }
 }
-
