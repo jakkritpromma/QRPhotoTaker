@@ -5,11 +5,13 @@ class RaisedGradientButton extends StatefulWidget {
   final Widget child;
   final Gradient? gradient;
   final void Function()? onPressed;
+  final void Function()? onLongPressed;
 
   const RaisedGradientButton({
     required this.child,
     this.gradient,
     this.onPressed,
+    this.onLongPressed,
   });
 
   @override
@@ -31,12 +33,8 @@ class _RaisedGradientButtonState extends State<RaisedGradientButton> {
             ? LinearGradient(
           colors: [Colors.red, Colors.orange],
         )
-            : _isHovered
-            ? LinearGradient(
-          colors: [Colors.purple, Colors.pink], // Hovered gradient
-        )
             : LinearGradient(
-          colors: [Colors.blue, Colors.green], // Normal state gradient
+          colors: [Colors.blue, Colors.green],
         ),
         boxShadow: [
           BoxShadow(
@@ -48,8 +46,23 @@ class _RaisedGradientButtonState extends State<RaisedGradientButton> {
       ),
       child: Material(
         color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
+        child: GestureDetector(
+          onLongPress: () {
+            print(TAG + "onLongPress");
+            setState(() {
+              _isPressed = true;
+            });
+          },
+          onLongPressEnd: (details) {
+            print(TAG + "onLongPressEnd");
+            if (widget.onPressed != null) {
+              widget.onPressed!();
+            }
+            setState(() {
+              _isPressed = false;
+            });
+          },
+          onTap: (){
             print(TAG + "onTap");
             setState(() {
               _isPressed = true;
@@ -57,17 +70,18 @@ class _RaisedGradientButtonState extends State<RaisedGradientButton> {
             if (widget.onPressed != null) {
               widget.onPressed!();
             }
-            Future.delayed(Duration(milliseconds: 500), () {
+            Future.delayed(Duration(milliseconds: 250), () {
               setState(() {
                 _isPressed = false;
               });
             });
           },
-          // Disable the splash and highlight colors
-          splashColor: Colors.transparent, // No splash effect
-          highlightColor: Colors.transparent, // No highlight effect
-          child: Center(
-            child: widget.child,
+          child: InkWell(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            child: Center(
+              child: widget.child,
+            ),
           ),
         ),
       ),
