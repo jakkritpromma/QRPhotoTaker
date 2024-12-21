@@ -5,6 +5,8 @@ import 'package:qrphototaker/bloc/qr_scanner_bloc.dart';
 import 'package:qrphototaker/bloc/camera_bloc.dart';
 import 'package:qrphototaker/ui/camera_page.dart';
 import 'package:qrphototaker/ui/qr_scanner_page.dart';
+import 'package:qrphototaker/ui/widget/RaisedGradientButton.dart';
+import 'package:qrphototaker/ui/widget/CustomElevatedButton.dart';
 import 'dart:io';
 
 void main() async {
@@ -55,29 +57,28 @@ class HomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
+            CustomElevatedButton(
               onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => CameraPage(),
                 ),
               ),
-              child: Text('Take Photo'),
+              label: 'Take Photo',
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => QRScannerPage(),
+            RaisedGradientButton(
+                child: Text(
+                  'Scan QR Code',
+                  style: TextStyle(color: Colors.white),
                 ),
-              ),
-              child: Text('Scan QR Code'),
-            ),
+                gradient: LinearGradient(
+                  colors: <Color>[Colors.green, Colors.black],
+                ),
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => QRScannerPage()))),
           ],
         ),
       ),
     );
   }
 }
-
