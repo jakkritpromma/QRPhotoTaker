@@ -3,10 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qrphototaker/bloc/qr_scanner_bloc.dart';
 import 'package:qrphototaker/bloc/camera_bloc.dart';
-import 'package:qrphototaker/ui/camera_page.dart';
-import 'package:qrphototaker/ui/qr_scanner_page.dart';
-import 'package:qrphototaker/ui/widget/RaisedGradientButton.dart';
-import 'package:qrphototaker/ui/widget/CustomElevatedButton.dart';
+import 'package:qrphototaker/ui/home_page.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -80,43 +77,3 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
-  final List<CameraDescription> cameras;
-
-  const HomePage({required this.cameras});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Camera & QR Scanner'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CustomElevatedButton(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CameraPage(),
-                ),
-              ),
-              label: 'Take Photo',
-            ),
-            SizedBox(height: 20),
-            RaisedGradientButton(
-                child: Text(
-                  'Scan QR Code',
-                  style: TextStyle(color: Colors.white),
-                ),
-                gradient: LinearGradient(
-                  colors: <Color>[Colors.green, Colors.black],
-                ),
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => QRScannerPage()))),
-          ],
-        ),
-      ),
-    );
-  }
-}
