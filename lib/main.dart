@@ -8,9 +8,14 @@ import 'package:qrphototaker/ui/qr_scanner_page.dart';
 import 'package:qrphototaker/ui/widget/RaisedGradientButton.dart';
 import 'package:qrphototaker/ui/widget/CustomElevatedButton.dart';
 import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'dart:async';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await requestStoragePermissions();
+  await requestPhotosPermission();
   final cameras = await availableCameras();
   runApp(
     MultiBlocProvider(
@@ -23,6 +28,39 @@ void main() async {
       ),
     ),
   );
+}
+
+Future<void> requestStoragePermissions() async {
+  final String TAG = "requestStoragePermissions MyLog ";
+  // For Android 10 and below
+  if (await Permission.storage.request().isGranted) {
+    print(TAG + "Storage permission granted.");
+  }
+
+  // For Android 11+ (API 30+)
+  if (!await Permission.manageExternalStorage.isGranted) {
+    // Check if the app needs to open settings
+    if (await Permission.manageExternalStorage.isPermanentlyDenied) {
+      await openAppSettings();
+    } else {
+      final status = await Permission.manageExternalStorage.request();
+      print(TAG + "Permission status: $status");
+    }
+  }
+}
+
+Future<void> requestPhotosPermission() async {
+  final String TAG = "requestPhotosPermission MyLog ";
+  final status = await Permission.photos.request();
+
+  if (status.isGranted) {
+    print(TAG + "Photos and Videos permission granted.");
+  } else if (status.isDenied) {
+    print(TAG + "Permission denied. Please try again.");
+  } else if (status.isPermanentlyDenied) {
+    print(TAG + "Permission permanently denied. Open settings.");
+    await openAppSettings(); // Redirect to settings if permission is permanently denied
+  }
 }
 
 class MyApp extends StatelessWidget {
