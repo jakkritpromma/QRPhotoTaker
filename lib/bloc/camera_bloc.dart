@@ -5,6 +5,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:photo_manager/photo_manager.dart';
 
 abstract class CameraEvent {}
 
@@ -51,13 +52,41 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
       final String fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
       final filePath = '/storage/emulated/0/DCIM/Camera/$fileName';
 
-      await saveFileToDCIM(fileName, fileBytes);
+      // Save file to DCIM on Android
+      if (Platform.isAndroid) {
+        await saveFileToDCIM(fileName, fileBytes);
+        print('$TAG Scanning file at path: $filePath');
+        await _scanMedia(filePath);
+      }
 
-      print('$TAG Scanning file at path: $filePath');
-      await _scanMedia(filePath);
+      // Save file to iOS Photos Library
+      if (Platform.isIOS) {
+        await saveFileToGallery(fileBytes, fileName);
+      }
+
       emit(PhotoCaptured(file));
     } catch (e) {
       print('$TAG Error capturing photo: $e');
+    }
+  }
+
+  Future<void> saveFileToGallery(List<int> fileBytes, String fileName) async {
+    try {
+      // Request permissions to access the photo gallery
+      final permission = await PhotoManager.requestPermissionExtend();
+      if (permission.isAuth) {
+        // Save the file to the gallery
+        await PhotoManager.editor.saveImage(
+          Uint8List.fromList(fileBytes),
+          title: fileName, // 'title' is required, so we're passing fileName
+          filename: fileName, // Add 'filename' as a required parameter
+        );
+        print('$TAG File saved to iOS Photos Library: $fileName');
+      } else {
+        print('$TAG Permission denied to access the photo gallery.');
+      }
+    } catch (e) {
+      print('$TAG Error saving file to iOS gallery: $e');
     }
   }
 

@@ -50,5 +50,10 @@
 	<string>This app requires access to the camera to capture photos.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app requires access to the microphone for video recording or audio input.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>This app needs access to your photo library to save photos.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>This app needs access to add photos to your library.</string>
+
 </dict>
 </plist>
