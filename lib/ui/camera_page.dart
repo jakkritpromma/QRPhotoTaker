@@ -3,7 +3,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qrphototaker/bloc/camera_bloc.dart';
 import 'package:qrphototaker/ui/widget/RaisedGradientButton.dart';
-import 'package:qrphototaker/ui/widget/CustomElevatedButton.dart';
 import 'dart:io';
 
 class CameraPage extends StatelessWidget {
@@ -11,22 +10,36 @@ class CameraPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final cameraBloc = BlocProvider.of<CameraBloc>(context);
     return Scaffold(
-      appBar: AppBar(title: Text('Take Photo')),
+      appBar: null, // Hides the default AppBar
       body: BlocBuilder<CameraBloc, CameraState>(
         builder: (context, state) {
           if (state is CameraInitial) {
             cameraBloc.add(InitializeCamera());
             return Center(child: CircularProgressIndicator());
           } else if (state is CameraInitialized) {
-            return Column(
+            return Stack(
               children: [
-                Expanded(
-                  child: Center(
-                    child: CameraPreview(state.controller),
+                // CameraPreview in the background
+                Positioned.fill(
+                  child: CameraPreview(state.controller),
+                ),
+                // Positioned back button in the foreground
+                Positioned(
+                  top: 30, // Position the button 30 pixels from the top
+                  left: 10, // Position from the left side
+                  child: IconButton(
+                    icon: Icon(Icons.arrow_back, color: Colors.white, size: 30),
+                    onPressed: () {
+                      Navigator.pop(context); // Navigate back to the previous page
+                    },
                   ),
                 ),
-                SizedBox(height: 20),
-                RaisedGradientButton(
+                // RaisedGradientButton in the foreground, positioned at the bottom
+                Positioned(
+                  bottom: 30, // Position the button 30 pixels from the bottom
+                  left: 20, // Optionally adjust left and right
+                  right: 20,
+                  child: RaisedGradientButton(
                     child: Text(
                       'Capture',
                       style: TextStyle(color: Colors.white),
@@ -34,18 +47,46 @@ class CameraPage extends StatelessWidget {
                     gradient: LinearGradient(
                       colors: <Color>[Colors.green, Colors.black],
                     ),
-                    onPressed: () => cameraBloc.add(TakePhoto())),
+                    onPressed: () => cameraBloc.add(TakePhoto()),
+                  ),
+                ),
               ],
             );
           } else if (state is PhotoCaptured) {
-            return Column(
+            return Stack(
               children: [
-                Expanded(
-                  child: Center(child: Image.file(File(state.photo.path))),
+                // Display the captured image in the background
+                Positioned.fill(
+                  child: Center(
+                    child: Image.file(File(state.photo.path)),
+                  ),
                 ),
-                CustomElevatedButton(
-                  onPressed: () => cameraBloc.add(InitializeCamera()),
-                  label: 'Retake',
+                // Positioned back button in the foreground
+                Positioned(
+                  top: 30, // Position the button 30 pixels from the top
+                  left: 10, // Position from the left side
+                  child: IconButton(
+                    icon: Icon(Icons.arrow_back, color: Colors.white, size: 30),
+                    onPressed: () {
+                      Navigator.pop(context); // Navigate back to the previous page
+                    },
+                  ),
+                ),
+                // RaisedGradientButton in the foreground, positioned at the bottom
+                Positioned(
+                  bottom: 30, // Position the button 30 pixels from the bottom
+                  left: 20, // Optionally adjust left and right
+                  right: 20,
+                  child: RaisedGradientButton(
+                    child: Text(
+                      'Retake',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    gradient: LinearGradient(
+                      colors: <Color>[Colors.green, Colors.black],
+                    ),
+                    onPressed: () => cameraBloc.add(InitializeCamera()),
+                  ),
                 ),
               ],
             );
@@ -56,4 +97,3 @@ class CameraPage extends StatelessWidget {
     );
   }
 }
-
