@@ -3,6 +3,8 @@ import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:async';
+import 'package:flutter/services.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 abstract class CameraEvent {}
 
@@ -44,41 +46,44 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
 
   Future<void> _takePhoto(TakePhoto event, Emitter<CameraState> emit) async {
     try {
-        final XFile file = await _controller!.takePicture();
-        final List<int> fileBytes = await file.readAsBytes();
-        final String fileName = '${DateTime
-            .now()
-            .millisecondsSinceEpoch}.jpg'; // Generate a unique file name for the photo
-        await saveFileToDCIM(fileName, fileBytes);
-        print(TAG + 'Photo saved to DCIM directory: $fileName');
-        _scanMedia('/storage/emulated/0/DCIM/$fileName');
-        emit(PhotoCaptured(file));
+      final XFile file = await _controller!.takePicture();
+      final List<int> fileBytes = await file.readAsBytes();
+      final String fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final filePath = '/storage/emulated/0/DCIM/Camera/$fileName';
+
+      await saveFileToDCIM(fileName, fileBytes);
+
+      print('$TAG Scanning file at path: $filePath');
+      await _scanMedia(filePath);
+      emit(PhotoCaptured(file));
     } catch (e) {
-      print(TAG + 'Error capturing photo: $e');
+      print('$TAG Error capturing photo: $e');
     }
   }
 
   Future<void> saveFileToDCIM(String fileName, List<int> fileBytes) async {
-    final directory = Directory('/storage/emulated/0/DCIM');
+    final directory = Directory('/storage/emulated/0/DCIM/Camera');
     if (!directory.existsSync()) {
-      throw Exception(TAG + "DCIM folder does not exist.");
+      directory.createSync(recursive: true); // Create the directory if it doesn't exist
+      print('$TAG Created DCIM/Camera directory');
     }
+
     final filePath = '${directory.path}/$fileName';
     final file = File(filePath);
     await file.writeAsBytes(fileBytes);
-    print(TAG + "File saved at $filePath");
+
+    print('$TAG File saved at $filePath');
+    print('$TAG File exists after saving: ${file.existsSync()}');
   }
 
-  //Notify the media scanner to update the gallery
   Future<void> _scanMedia(String path) async {
+    const platform = MethodChannel('com.jakkagaku.qrphototaker/media_scan');
     try {
-      final result = await Process.run(
-        'content',
-        ['broadcast', '-a', 'android.intent.action.MEDIA_SCANNER_SCAN_FILE', 'file://$path'],
-      );
-      print(TAG + 'Media scanner result: $result');
+      print("$TAG Dart: Invoking media scan for path: $path");
+      await platform.invokeMethod('scanFile', {'path': path});
+      print("$TAG Dart: Media scanner invoked successfully");
     } catch (e) {
-      print(TAG + 'Error scanning media: $e');
+      print("$TAG Dart: Error invoking media scanner: $e");
     }
   }
 

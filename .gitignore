@@ -53,3 +53,9 @@ macos/Podfile
 macos/Flutter/GeneratedPluginRegistrant.swift
 macos/Flutter/ephemeral/Flutter-Generated.xcconfig
 macos/Flutter/ephemeral/flutter_export_environment.sh
+
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
