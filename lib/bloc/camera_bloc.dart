@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 abstract class CameraEvent {}
 
@@ -19,13 +20,12 @@ class CameraInitial extends CameraState {}
 
 class CameraInitialized extends CameraState {
   final CameraController controller;
-
-  CameraInitialized(this.controller);
+  final AssetEntity latestPhoto;
+  CameraInitialized(this.controller, this.latestPhoto);
 }
 
 class PhotoCaptured extends CameraState {
   final XFile photo;
-
   PhotoCaptured(this.photo);
 }
 
@@ -33,6 +33,7 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
   final String TAG = "CameraBloc MyLog ";
   final List<CameraDescription> cameras;
   CameraController? _controller;
+  AssetEntity? _latestPhoto;
 
   CameraBloc(this.cameras) : super(CameraInitial()) {
     on<InitializeCamera>(_initializeCamera);
@@ -42,7 +43,29 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
   Future<void> _initializeCamera(InitializeCamera event, Emitter<CameraState> emit) async {
     _controller = CameraController(cameras.first, ResolutionPreset.high);
     await _controller!.initialize();
-    emit(CameraInitialized(_controller!));
+
+    final PermissionState ps = await PhotoManager.requestPermissionExtend();
+    if (ps.isAuth || await Permission.photos.request().isGranted) {
+      List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(
+        type: RequestType.image,
+        hasAll: true,
+      );
+
+      if (albums.isNotEmpty) {
+        List<AssetEntity> photos = await albums[0].getAssetListRange(start: 0, end: 1);
+
+        if (photos.isNotEmpty) {
+          _latestPhoto = photos.first;
+        }
+      }
+    } else if (ps == PermissionState.denied) {
+      print(TAG + 'Permission denied. Please allow access in the app settings.');
+    } else if (ps == PermissionState.limited) {
+      print(TAG + 'Limited access to photos.');
+    } else {
+      print(TAG + 'Please allow access in the app settings.');
+    }
+    emit(CameraInitialized(_controller!, _latestPhoto!));
   }
 
   Future<void> _takePhoto(TakePhoto event, Emitter<CameraState> emit) async {

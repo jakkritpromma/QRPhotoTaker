@@ -4,8 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qrphototaker/bloc/camera_bloc.dart';
 import 'package:qrphototaker/ui/widget/RaisedGradientButton.dart';
 import 'dart:io';
+import 'package:photo_manager/photo_manager.dart';
+import 'dart:typed_data';
+import 'package:permission_handler/permission_handler.dart';
 
 class CameraPage extends StatelessWidget {
+  String TAG = "CameraPage MyLog ";
+
   @override
   Widget build(BuildContext context) {
     final cameraBloc = BlocProvider.of<CameraBloc>(context);
@@ -40,16 +45,20 @@ class CameraPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        child: RaisedGradientButton(
-                          child: Text(
-                            'Capture',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          gradient: LinearGradient(
-                            colors: <Color>[Colors.green, Colors.black],
-                          ),
-                          onPressed: () => cameraBloc.add(TakePhoto()),
-                        ),
+                        child: state.latestPhoto != null
+                            ? FutureBuilder<Uint8List?>(
+                                future: state.latestPhoto!.thumbnailDataWithSize(ThumbnailSize(100, 100)),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                                    return Image.memory(snapshot.data!);
+                                  } else if (snapshot.hasError) {
+                                    return Text('Error loading photo');
+                                  } else {
+                                    return CircularProgressIndicator();
+                                  }
+                                },
+                              )
+                            : Text('No photo available'),
                       ),
                       SizedBox(width: 10),
                       Expanded(
