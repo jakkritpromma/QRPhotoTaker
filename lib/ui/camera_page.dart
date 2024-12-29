@@ -8,6 +8,9 @@ import 'package:photo_manager/photo_manager.dart';
 import 'dart:typed_data';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:qr_code_tools/qr_code_tools.dart'; // For decoding QR from images
+
 
 class CameraPage extends StatelessWidget {
   String TAG = "CameraPage MyLog ";
@@ -57,6 +60,7 @@ class CameraPage extends StatelessWidget {
                                   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
                                   if (pickedFile != null) {
                                     print("Selected Image Path: ${pickedFile.path}");
+                                    await scanQRCodeFromFile(pickedFile.path);
                                   }
                                 },
                                 child: Center(
@@ -150,5 +154,14 @@ class CameraPage extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Future<void> scanQRCodeFromFile(String filePath) async {
+    try {
+      final qrCode = await QrCodeToolsPlugin.decodeFrom(filePath);
+      print(TAG + qrCode.toString());
+    } catch (e) {
+      print(TAG + "Failed to scan QR Code: $e");
+    }
   }
 }
