@@ -47,24 +47,33 @@ class CameraPage extends StatelessWidget {
                       Expanded(
                         child: state.latestPhoto != null
                             ? FutureBuilder<Uint8List?>(
-                                future: state.latestPhoto!.thumbnailDataWithSize(ThumbnailSize(100, 100)),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-                                    return Image.memory(snapshot.data!);
-                                  } else if (snapshot.hasError) {
-                                    return Text('Error loading photo');
-                                  } else {
-                                    return CircularProgressIndicator();
-                                  }
-                                },
-                              )
+                          future: state.latestPhoto!.thumbnailDataWithSize(ThumbnailSize(50, 50)),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                              return Center( 
+                                child: ClipOval(
+                                  child: Image.memory(
+                                    snapshot.data!,
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              );
+                            } else if (snapshot.hasError) {
+                              return Text('Error loading photo');
+                            } else {
+                              return CircularProgressIndicator();
+                            }
+                          },
+                        )
                             : Text('No photo available'),
                       ),
                       SizedBox(width: 10),
                       Expanded(
                         child: RaisedGradientButton(
                           child: Text(
-                            'Capture2',
+                            'Capture',
                             style: TextStyle(color: Colors.white),
                           ),
                           gradient: LinearGradient(
