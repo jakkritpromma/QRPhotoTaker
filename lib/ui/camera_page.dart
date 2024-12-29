@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:photo_manager/photo_manager.dart';
 import 'dart:typed_data';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:image_picker/image_picker.dart';
 
 class CameraPage extends StatelessWidget {
   String TAG = "CameraPage MyLog ";
@@ -50,13 +51,22 @@ class CameraPage extends StatelessWidget {
                           future: state.latestPhoto!.thumbnailDataWithSize(ThumbnailSize(50, 50)),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-                              return Center( 
-                                child: ClipOval(
-                                  child: Image.memory(
-                                    snapshot.data!,
-                                    width: 50,
-                                    height: 50,
-                                    fit: BoxFit.cover,
+                              return GestureDetector(
+                                onTap: () async {
+                                  final picker = ImagePicker();
+                                  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+                                  if (pickedFile != null) {
+                                    print("Selected Image Path: ${pickedFile.path}");
+                                  }
+                                },
+                                child: Center(
+                                  child: ClipOval(
+                                    child: Image.memory(
+                                      snapshot.data!,
+                                      width: 50,
+                                      height: 50,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
                               );
@@ -67,7 +77,16 @@ class CameraPage extends StatelessWidget {
                             }
                           },
                         )
-                            : Text('No photo available'),
+                            : GestureDetector(
+                          onTap: () async {
+                            final picker = ImagePicker();
+                            final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+                            if (pickedFile != null) {
+                              print("Selected Image Path: ${pickedFile.path}");
+                            }
+                          },
+                          child: Text('No photo available'),
+                        ),
                       ),
                       SizedBox(width: 10),
                       Expanded(
