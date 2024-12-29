@@ -10,7 +10,7 @@ class CameraPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final cameraBloc = BlocProvider.of<CameraBloc>(context);
     return Scaffold(
-      appBar: null, // Hides the default AppBar
+      appBar: null, // Hide the default AppBar.
       body: BlocBuilder<CameraBloc, CameraState>(
         builder: (context, state) {
           if (state is CameraInitial) {
@@ -19,14 +19,12 @@ class CameraPage extends StatelessWidget {
           } else if (state is CameraInitialized) {
             return Stack(
               children: [
-                // CameraPreview in the background
                 Positioned.fill(
                   child: CameraPreview(state.controller),
                 ),
-                // Positioned back button in the foreground
                 Positioned(
-                  top: 30, // Position the button 30 pixels from the top
-                  left: 10, // Position from the left side
+                  top: 30,
+                  left: 10,
                   child: IconButton(
                     icon: Icon(Icons.arrow_back, color: Colors.white, size: 30),
                     onPressed: () {
@@ -34,20 +32,43 @@ class CameraPage extends StatelessWidget {
                     },
                   ),
                 ),
-                // RaisedGradientButton in the foreground, positioned at the bottom
                 Positioned(
-                  bottom: 30, // Position the button 30 pixels from the bottom
-                  left: 20, // Optionally adjust left and right
+                  bottom: 30,
+                  left: 20,
                   right: 20,
-                  child: RaisedGradientButton(
-                    child: Text(
-                      'Capture',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    gradient: LinearGradient(
-                      colors: <Color>[Colors.green, Colors.black],
-                    ),
-                    onPressed: () => cameraBloc.add(TakePhoto()),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: RaisedGradientButton(
+                          child: Text(
+                            'Capture',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          gradient: LinearGradient(
+                            colors: <Color>[Colors.green, Colors.black],
+                          ),
+                          onPressed: () => cameraBloc.add(TakePhoto()),
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: RaisedGradientButton(
+                          child: Text(
+                            'Capture2',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          gradient: LinearGradient(
+                            colors: <Color>[Colors.green, Colors.black],
+                          ),
+                          onPressed: () => cameraBloc.add(TakePhoto()),
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Container(),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -55,16 +76,14 @@ class CameraPage extends StatelessWidget {
           } else if (state is PhotoCaptured) {
             return Stack(
               children: [
-                // Display the captured image in the background
                 Positioned.fill(
                   child: Center(
                     child: Image.file(File(state.photo.path)),
                   ),
                 ),
-                // Positioned back button in the foreground
                 Positioned(
-                  top: 30, // Position the button 30 pixels from the top
-                  left: 10, // Position from the left side
+                  top: 30,
+                  left: 10,
                   child: IconButton(
                     icon: Icon(Icons.arrow_back, color: Colors.white, size: 30),
                     onPressed: () {
@@ -72,10 +91,9 @@ class CameraPage extends StatelessWidget {
                     },
                   ),
                 ),
-                // RaisedGradientButton in the foreground, positioned at the bottom
                 Positioned(
-                  bottom: 30, // Position the button 30 pixels from the bottom
-                  left: 20, // Optionally adjust left and right
+                  bottom: 30,
+                  left: 20,
                   right: 20,
                   child: RaisedGradientButton(
                     child: Text(
