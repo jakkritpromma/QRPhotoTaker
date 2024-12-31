@@ -8,6 +8,7 @@ import 'dart:io';
 import 'package:photo_manager/photo_manager.dart';
 import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CameraPage extends StatelessWidget {
@@ -77,7 +78,6 @@ class CameraPage extends StatelessWidget {
                                                     if (await canLaunchUrl(uri)) {
                                                       await launchUrl(uri, mode: LaunchMode.externalApplication);
                                                     } else {
-                                                      // Optional: Show error if the URL is invalid
                                                       ScaffoldMessenger.of(context).showSnackBar(
                                                         SnackBar(content: Text('Could not open the link')),
                                                       );
@@ -93,14 +93,21 @@ class CameraPage extends StatelessWidget {
                                                 ),
                                               ),
                                               actions: [
-                                                TextButton(
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    if (barcode.rawValue != null) {
+                                                      Share.share(barcode.rawValue.toString());
+                                                    }
+                                                  },
+                                                  child: Text('Share'),
+                                                ),
+                                                ElevatedButton(
                                                   onPressed: () => Navigator.of(context).pop(),
                                                   child: Text('OK'),
                                                 ),
                                               ],
                                             ),
                                           );
-
                                         }
                                       } else {
                                         print('No QR Code detected.');
@@ -110,7 +117,7 @@ class CameraPage extends StatelessWidget {
                                             title: Text('No QR Code'),
                                             content: Text('No QR Code detected.'),
                                             actions: [
-                                              TextButton(
+                                              ElevatedButton(
                                                 onPressed: () => Navigator.of(context).pop(),
                                                 child: Text('OK'),
                                               ),
@@ -126,7 +133,7 @@ class CameraPage extends StatelessWidget {
                                           title: Text('Error'),
                                           content: Text('Error detecting QR Code: $e'),
                                           actions: [
-                                            TextButton(
+                                            ElevatedButton(
                                               onPressed: () => Navigator.of(context).pop(),
                                               child: Text('OK'),
                                             ),
@@ -158,7 +165,6 @@ class CameraPage extends StatelessWidget {
                         )
                             : GestureDetector(),
                       ),
-
                       SizedBox(width: 10),
                       Expanded(
                         child: RaisedGradientButton(

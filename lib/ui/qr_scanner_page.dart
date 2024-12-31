@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:qrphototaker/bloc/qr_scanner_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class QRScannerPage extends StatelessWidget {
@@ -26,7 +27,6 @@ class QRScannerPage extends StatelessWidget {
                 return Center(
                   child: AlertDialog(
                     title: Text('QR Code Found'),
-                    //content: Text(state.qrCode),
                     content: GestureDetector(
                       onTap: () async {
                         final url = state.qrCode;
@@ -35,7 +35,6 @@ class QRScannerPage extends StatelessWidget {
                           if (await canLaunchUrl(uri)) {
                             await launchUrl(uri, mode: LaunchMode.externalApplication);
                           } else {
-                            // Optional: Show error if the URL is invalid
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Could not open the link')),
                             );
@@ -51,6 +50,14 @@ class QRScannerPage extends StatelessWidget {
                       ),
                     ),
                     actions: [
+                      ElevatedButton(
+                        onPressed: () {
+                          if (state.qrCode != null) {
+                            Share.share(state.qrCode.toString());
+                          }
+                        },
+                        child: Text('Share'),
+                      ),
                       ElevatedButton(
                         onPressed: () => Navigator.pop(context),
                         child: Text('OK'),
