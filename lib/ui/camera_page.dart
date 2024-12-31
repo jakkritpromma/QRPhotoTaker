@@ -64,20 +64,50 @@ class CameraPage extends StatelessWidget {
                                       if (barcodes.isNotEmpty) {
                                         for (Barcode barcode in barcodes) {
                                           print('Detected QR Code: ${barcode.rawValue}');
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text('QR Code: ${barcode.rawValue}')),
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) => AlertDialog(
+                                              title: Text('QR Code Detected'),
+                                              content: Text('QR Code: ${barcode.rawValue}'),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () => Navigator.of(context).pop(),
+                                                  child: Text('OK'),
+                                                ),
+                                              ],
+                                            ),
                                           );
                                         }
                                       } else {
                                         print('No QR Code detected.');
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text('No QR Code detected')),
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                            title: Text('No QR Code'),
+                                            content: Text('No QR Code detected.'),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () => Navigator.of(context).pop(),
+                                                child: Text('OK'),
+                                              ),
+                                            ],
+                                          ),
                                         );
                                       }
                                     } catch (e) {
                                       print('Error detecting QR Code: $e');
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('Error detecting QR Code')),
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          title: Text('Error'),
+                                          content: Text('Error detecting QR Code: $e'),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () => Navigator.of(context).pop(),
+                                              child: Text('OK'),
+                                            ),
+                                          ],
+                                        ),
                                       );
                                     } finally {
                                       barcodeScanner.close();
@@ -102,9 +132,9 @@ class CameraPage extends StatelessWidget {
                             }
                           },
                         )
-                            : GestureDetector(
-                        ),
+                            : GestureDetector(),
                       ),
+
                       SizedBox(width: 10),
                       Expanded(
                         child: RaisedGradientButton(
