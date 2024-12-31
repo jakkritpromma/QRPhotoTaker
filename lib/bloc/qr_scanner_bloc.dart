@@ -14,10 +14,16 @@ class QRCodeScanned extends QRScannerState {
   QRCodeScanned(this.qrCode);
 }
 
+class ResetQRCode extends QRScannerEvent {}
+
 class QRScannerBloc extends Bloc<QRScannerEvent, QRScannerState> {
   QRScannerBloc() : super(QRScannerInitial()) {
     on<QRCodeDetected>((event, emit) {
       emit(QRCodeScanned(event.barcode.rawValue ?? 'Unknown'));
+    });
+
+    on<ResetQRCode>((event, emit) {
+      emit(QRScannerInitial());
     });
   }
 }

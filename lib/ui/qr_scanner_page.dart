@@ -25,44 +25,46 @@ class QRScannerPage extends StatelessWidget {
             builder: (context, state) {
               if (state is QRCodeScanned) {
                 return Center(
-                  child: AlertDialog(
-                    title: Text('QR Code Found'),
-                    content: GestureDetector(
-                      onTap: () async {
-                        final url = state.qrCode;
-                        if (url != null) {
-                          final uri = Uri.parse(url);
-                          if (await canLaunchUrl(uri)) {
-                            await launchUrl(uri, mode: LaunchMode.externalApplication);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Could not open the link')),
-                            );
-                          }
-                        }
-                      },
-                      child: Text(
-                        state.qrCode.toString(),
-                        style: TextStyle(
-                          color: Colors.blue,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ),
-                    actions: [
-                      ElevatedButton(
-                        onPressed: () {
-                          if (state.qrCode != null) {
-                            Share.share(state.qrCode.toString());
+                  child: Builder(
+                    builder: (dialogContext) => AlertDialog(
+                      title: Text('QR Code Found'),
+                      content: GestureDetector(
+                        onTap: () async {
+                          final url = state.qrCode;
+                          if (url != null) {
+                            final uri = Uri.parse(url);
+                            if (await canLaunchUrl(uri)) {
+                              await launchUrl(uri, mode: LaunchMode.externalApplication);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Could not open the link')),
+                              );
+                            }
                           }
                         },
-                        child: Text('Share'),
+                        child: Text(
+                          state.qrCode.toString(),
+                          style: TextStyle(
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
                       ),
-                      ElevatedButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text('OK'),
-                      ),
-                    ],
+                      actions: [
+                        ElevatedButton(
+                          onPressed: () {
+                            if (state.qrCode != null) {
+                              Share.share(state.qrCode.toString());
+                            }
+                          },
+                          child: Text('Share'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => context.read<QRScannerBloc>().add(ResetQRCode()),
+                          child: Text('OK'),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               }
