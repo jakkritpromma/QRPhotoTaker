@@ -6,12 +6,18 @@ class RaisedGradientButton extends StatefulWidget {
   final Gradient? gradient;
   final void Function()? onPressed;
   final void Function()? onLongPressed;
+  final double borderRadius; // Add a property for border radius
+  final double width; // Dynamically pass the width
+  final double height; // Dynamically pass the height
 
   const RaisedGradientButton({
     required this.child,
     this.gradient,
     this.onPressed,
     this.onLongPressed,
+    this.borderRadius = 12.0, // Default radius value is 12
+    required this.width, // Dynamically pass width
+    required this.height, // Dynamically pass height
   });
 
   @override
@@ -21,13 +27,12 @@ class RaisedGradientButton extends StatefulWidget {
 class _RaisedGradientButtonState extends State<RaisedGradientButton> {
   final String TAG = "RaisedGradientButtonState MyLog ";
   bool _isPressed = false;
-  bool _isHovered = false; // Track hover state
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 100,
-      height: 50.0,
+      width: widget.width,  // Use passed width
+      height: widget.height, // Use passed height
       decoration: BoxDecoration(
         gradient: _isPressed
             ? LinearGradient(
@@ -36,6 +41,7 @@ class _RaisedGradientButtonState extends State<RaisedGradientButton> {
             : LinearGradient(
           colors: [Colors.blue, Colors.green],
         ),
+        borderRadius: BorderRadius.circular(widget.borderRadius), // Apply rounded corners
         boxShadow: [
           BoxShadow(
             color: Colors.grey,
@@ -62,7 +68,7 @@ class _RaisedGradientButtonState extends State<RaisedGradientButton> {
               _isPressed = false;
             });
           },
-          onTap: (){
+          onTap: () {
             print(TAG + "onTap");
             setState(() {
               _isPressed = true;

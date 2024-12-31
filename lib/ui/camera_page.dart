@@ -169,13 +169,15 @@ class CameraPage extends StatelessWidget {
                       Expanded(
                         child: RaisedGradientButton(
                           child: Text(
-                            'Capture',
+                            'CAPTURE',
                             style: TextStyle(color: Colors.white),
                           ),
                           gradient: LinearGradient(
                             colors: <Color>[Colors.green, Colors.black],
                           ),
                           onPressed: () => cameraBloc.add(TakePhoto()),
+                          width: 100,
+                          height: 50,
                         ),
                       ),
                       SizedBox(width: 10),
@@ -218,6 +220,8 @@ class CameraPage extends StatelessWidget {
                       colors: <Color>[Colors.green, Colors.black],
                     ),
                     onPressed: () => cameraBloc.add(InitializeCamera()),
+                    width: 100,
+                    height: 50
                   ),
                 ),
               ],

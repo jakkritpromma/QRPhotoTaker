@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:qrphototaker/ui/widget/RaisedGradientButton.dart';
-import 'package:qrphototaker/ui/widget/CustomElevatedButton.dart';
 import 'package:qrphototaker/ui/camera_page.dart';
 import 'package:qrphototaker/ui/qr_scanner_page.dart';
 
@@ -12,34 +11,59 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get screen width using MediaQuery
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    // Set the height to half of the screen width
+    double buttonHeight = screenWidth / 2;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Camera & QR Scanner'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CustomElevatedButton(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CameraPage(),
-                ),
-              ),
-              label: 'Take Photo',
-            ),
-            SizedBox(height: 20),
-            RaisedGradientButton(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.0),  // Add margin left and right here
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // RaisedGradientButton 1
+              RaisedGradientButton(
                 child: Text(
-                  'Scan QR Code',
-                  style: TextStyle(color: Colors.white),
+                  'TAKE PHOTO',
+                  style: TextStyle(color: Colors.white, fontSize: 40),
                 ),
                 gradient: LinearGradient(
                   colors: <Color>[Colors.green, Colors.black],
                 ),
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => QRScannerPage()))),
-          ],
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CameraPage()),
+                ),
+                borderRadius: 12.0,
+                width: screenWidth,
+                height: buttonHeight,
+              ),
+              SizedBox(height: 20),
+              // RaisedGradientButton 2
+              RaisedGradientButton(
+                child: Text(
+                  'SCAN QR CODE',
+                  style: TextStyle(color: Colors.white, fontSize: 40),
+                ),
+                gradient: LinearGradient(
+                  colors: <Color>[Colors.green, Colors.black],
+                ),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => QRScannerPage()),
+                ),
+                borderRadius: 12.0,
+                width: screenWidth,
+                height: buttonHeight,
+              ),
+            ],
+          ),
         ),
       ),
     );
