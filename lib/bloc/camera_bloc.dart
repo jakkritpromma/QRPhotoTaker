@@ -46,18 +46,7 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
 
     final PermissionState ps = await PhotoManager.requestPermissionExtend();
     if (ps.isAuth || await Permission.photos.request().isGranted) {
-      List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(
-        type: RequestType.image,
-        hasAll: true,
-      );
-
-      if (albums.isNotEmpty) {
-        List<AssetEntity> photos = await albums[0].getAssetListRange(start: 0, end: 1);
-
-        if (photos.isNotEmpty) {
-          _latestPhoto = photos.first;
-        }
-      }
+      await updatePhoto();
     } else if (ps == PermissionState.denied) {
       print(TAG + 'Permission denied. Please allow access in the app settings.');
     } else if (ps == PermissionState.limited) {
@@ -66,6 +55,21 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
       print(TAG + 'Please allow access in the app settings.');
     }
     emit(CameraInitialized(_controller!, _latestPhoto!));
+  }
+
+  Future<void> updatePhoto() async {
+    List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(
+      type: RequestType.image,
+      hasAll: true,
+    );
+
+    if (albums.isNotEmpty) {
+      List<AssetEntity> photos = await albums[0].getAssetListRange(start: 0, end: 1);
+
+      if (photos.isNotEmpty) {
+        _latestPhoto = photos.first;
+      }
+    }
   }
 
   Future<void> _takePhoto(TakePhoto event, Emitter<CameraState> emit) async {
@@ -87,7 +91,9 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
         await saveFileToGallery(fileBytes, fileName);
       }
 
-      emit(PhotoCaptured(file));
+      //emit(PhotoCaptured(file));
+      updatePhoto();
+      emit(CameraInitialized(_controller!, _latestPhoto!));
     } catch (e) {
       print('$TAG Error capturing photo: $e');
     }
