@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:qrphototaker/bloc/camera_bloc.dart';
 import 'package:qrphototaker/ui/widget/RaisedGradientButton.dart';
 import 'dart:io';
@@ -56,6 +57,31 @@ class CameraPage extends StatelessWidget {
                                   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
                                   if (pickedFile != null) {
                                     print("Selected Image Path: ${pickedFile.path}");
+                                    final barcodeScanner = BarcodeScanner();
+                                    try {
+                                      final inputImage = InputImage.fromFilePath(pickedFile.path);
+                                      final barcodes = await barcodeScanner.processImage(inputImage);
+                                      if (barcodes.isNotEmpty) {
+                                        for (Barcode barcode in barcodes) {
+                                          print('Detected QR Code: ${barcode.rawValue}');
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text('QR Code: ${barcode.rawValue}')),
+                                          );
+                                        }
+                                      } else {
+                                        print('No QR Code detected.');
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text('No QR Code detected')),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      print('Error detecting QR Code: $e');
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Error detecting QR Code')),
+                                      );
+                                    } finally {
+                                      barcodeScanner.close();
+                                    }
                                   }
                                 },
                                 child: Center(
@@ -77,14 +103,6 @@ class CameraPage extends StatelessWidget {
                           },
                         )
                             : GestureDetector(
-                          onTap: () async {
-                            final picker = ImagePicker();
-                            final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-                            if (pickedFile != null) {
-                              print("Selected Image Path: ${pickedFile.path}");
-                            }
-                          },
-                          child: Text('No photo available'),
                         ),
                       ),
                       SizedBox(width: 10),
