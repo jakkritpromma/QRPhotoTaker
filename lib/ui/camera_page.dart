@@ -8,6 +8,7 @@ import 'dart:io';
 import 'package:photo_manager/photo_manager.dart';
 import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CameraPage extends StatelessWidget {
   String TAG = "CameraPage MyLog ";
@@ -68,7 +69,29 @@ class CameraPage extends StatelessWidget {
                                             context: context,
                                             builder: (context) => AlertDialog(
                                               title: Text('QR Code Detected'),
-                                              content: Text('QR Code: ${barcode.rawValue}'),
+                                              content: GestureDetector(
+                                                onTap: () async {
+                                                  final url = barcode.rawValue;
+                                                  if (url != null) {
+                                                    final uri = Uri.parse(url);
+                                                    if (await canLaunchUrl(uri)) {
+                                                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                                                    } else {
+                                                      // Optional: Show error if the URL is invalid
+                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                        SnackBar(content: Text('Could not open the link')),
+                                                      );
+                                                    }
+                                                  }
+                                                },
+                                                child: Text(
+                                                  barcode.rawValue.toString(),
+                                                  style: TextStyle(
+                                                    color: Colors.blue,
+                                                    decoration: TextDecoration.underline,
+                                                  ),
+                                                ),
+                                              ),
                                               actions: [
                                                 TextButton(
                                                   onPressed: () => Navigator.of(context).pop(),
@@ -77,6 +100,7 @@ class CameraPage extends StatelessWidget {
                                               ],
                                             ),
                                           );
+
                                         }
                                       } else {
                                         print('No QR Code detected.');
