@@ -27,12 +27,24 @@ android {
         versionName = "1.0"
     }
 
+    signingConfigs {
+        release {
+            // Use the ext properties from root project
+            storeFile file(rootProject.ext.storeFile)
+            storePassword rootProject.ext.storePassword
+            keyAlias rootProject.ext.keyAlias
+            keyPassword rootProject.ext.keyPassword
+        }
+    }
+
     buildTypes {
         buildTypes {
             release {
                 shrinkResources false
                 minifyEnabled false // Disable R8 entirely
-                signingConfig = signingConfigs.debug
+                proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+                //signingConfig = signingConfigs.debug
+                signingConfig = signingConfigs.release
             }
         }
     }

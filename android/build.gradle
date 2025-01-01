@@ -1,3 +1,25 @@
+def keystoreProperties = [:] // Create a map to store the key-value pairs
+def keystorePropertiesFile = rootProject.file('key.properties')
+
+// Check if the properties file exists
+if (keystorePropertiesFile.exists()) {
+    // Read the file line by line and parse key-value pairs
+    keystorePropertiesFile.eachLine { line ->
+        if (line.trim() && !line.startsWith("#")) { // Skip empty lines or comments
+            def (key, value) = line.split("=")
+            keystoreProperties[key.trim()] = value.trim()
+        }
+    }
+}
+
+// Make sure to set the properties globally if you need them elsewhere
+ext {
+    storeFile = file(keystoreProperties['storeFile'])
+    storePassword = keystoreProperties['storePassword']
+    keyAlias = keystoreProperties['keyAlias']
+    keyPassword = keystoreProperties['keyPassword']
+}
+
 allprojects {
     repositories {
         google()
@@ -8,8 +30,6 @@ allprojects {
 rootProject.buildDir = "../build"
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
     project.evaluationDependsOn(":app")
 }
 
