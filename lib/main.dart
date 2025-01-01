@@ -4,8 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qrphototaker/bloc/qr_scanner_bloc.dart';
 import 'package:qrphototaker/bloc/camera_bloc.dart';
 import 'package:qrphototaker/ui/home_page.dart';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
 
@@ -68,6 +66,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Camera & QR Scanner',
       theme: ThemeData(
         primarySwatch: Colors.blue,

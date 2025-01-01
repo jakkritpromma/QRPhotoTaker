@@ -11,10 +11,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get screen width using MediaQuery
     double screenWidth = MediaQuery.of(context).size.width;
-
-    // Set the height to half of the screen width
     double buttonHeight = screenWidth / 2;
 
     return Scaffold(
@@ -23,7 +20,7 @@ class HomePage extends StatelessWidget {
       ),
       body: Center(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.0),  // Add margin left and right here
+          padding: EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

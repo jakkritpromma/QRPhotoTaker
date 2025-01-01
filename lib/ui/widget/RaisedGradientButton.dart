@@ -6,18 +6,18 @@ class RaisedGradientButton extends StatefulWidget {
   final Gradient? gradient;
   final void Function()? onPressed;
   final void Function()? onLongPressed;
-  final double borderRadius; // Add a property for border radius
-  final double width; // Dynamically pass the width
-  final double height; // Dynamically pass the height
+  final double borderRadius;
+  final double width;
+  final double height;
 
   const RaisedGradientButton({
     required this.child,
     this.gradient,
     this.onPressed,
     this.onLongPressed,
-    this.borderRadius = 12.0, // Default radius value is 12
-    required this.width, // Dynamically pass width
-    required this.height, // Dynamically pass height
+    this.borderRadius = 12.0,
+    required this.width,
+    required this.height,
   });
 
   @override
@@ -31,8 +31,8 @@ class _RaisedGradientButtonState extends State<RaisedGradientButton> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: widget.width,  // Use passed width
-      height: widget.height, // Use passed height
+      width: widget.width,
+      height: widget.height,
       decoration: BoxDecoration(
         gradient: _isPressed
             ? LinearGradient(
@@ -41,7 +41,7 @@ class _RaisedGradientButtonState extends State<RaisedGradientButton> {
             : LinearGradient(
           colors: [Colors.blue, Colors.green],
         ),
-        borderRadius: BorderRadius.circular(widget.borderRadius), // Apply rounded corners
+        borderRadius: BorderRadius.circular(widget.borderRadius),
         boxShadow: [
           BoxShadow(
             color: Colors.grey,

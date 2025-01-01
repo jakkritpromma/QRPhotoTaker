@@ -1,10 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:camera/camera.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:async';
 import 'package:flutter/services.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -79,14 +77,12 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
       final String fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
       final filePath = '/storage/emulated/0/DCIM/Camera/$fileName';
 
-      // Save file to DCIM on Android
       if (Platform.isAndroid) {
         await saveFileToDCIM(fileName, fileBytes);
         print('$TAG Scanning file at path: $filePath');
         await _scanMedia(filePath);
       }
 
-      // Save file to iOS Photos Library
       if (Platform.isIOS) {
         await saveFileToGallery(fileBytes, fileName);
       }
@@ -101,14 +97,12 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
 
   Future<void> saveFileToGallery(List<int> fileBytes, String fileName) async {
     try {
-      // Request permissions to access the photo gallery
       final permission = await PhotoManager.requestPermissionExtend();
       if (permission.isAuth) {
-        // Save the file to the gallery
         await PhotoManager.editor.saveImage(
           Uint8List.fromList(fileBytes),
-          title: fileName, // 'title' is required, so we're passing fileName
-          filename: fileName, // Add 'filename' as a required parameter
+          title: fileName,
+          filename: fileName,
         );
         print('$TAG File saved to iOS Photos Library: $fileName');
       } else {
@@ -122,7 +116,7 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
   Future<void> saveFileToDCIM(String fileName, List<int> fileBytes) async {
     final directory = Directory('/storage/emulated/0/DCIM/Camera');
     if (!directory.existsSync()) {
-      directory.createSync(recursive: true); // Create the directory if it doesn't exist
+      directory.createSync(recursive: true);
       print('$TAG Created DCIM/Camera directory');
     }
 
