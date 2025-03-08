@@ -15,7 +15,7 @@ class ConversionPage extends StatelessWidget {
     return BlocProvider(
       create: (_) => ConversionBloc(),
       child: Scaffold(
-        appBar: AppBar(title: Text("Energy Mass Conversion")),
+        appBar: AppBar(title: const Text("Energy Mass Conversion")),
         body: BlocListener<ConversionBloc, ConversionState>(
           listener: (context, state) {
             final cursorPos1 = controllerE.selection.baseOffset;
@@ -23,8 +23,8 @@ class ConversionPage extends StatelessWidget {
             final cursorPos2 = controllerM.selection.baseOffset;
             print("${TAG}cursorPos2: $cursorPos2");
 
-            controllerE.text = state.energy.toStringAsFixed(5);
-            controllerM.text = state.mass.toStringAsFixed(5);
+            controllerE.text = state.energy.toStringAsFixed(2);
+            controllerM.text = state.mass.toStringAsFixed(2);
 
             if (cursorPos1 > -1) {
               controllerE.selection = TextSelection.fromPosition(
@@ -46,41 +46,76 @@ class ConversionPage extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: TextField(
-                            controller: controllerE,
-                            decoration: const InputDecoration(labelText: "E"),
-                            keyboardType: TextInputType.number,
-                            onChanged: (value) {
-                              print("${TAG}value: $value");
-                              context.read<ConversionBloc>().add(M1Changed(double.tryParse(value) ?? 0));
-                            },
-                          ),
-                        ),
+                            child: Column(
+                          children: [
+                            TextField(
+                              controller: controllerE,
+                              decoration: const InputDecoration(
+                                label: Center(
+                                  child: Text(
+                                    "E",
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                              keyboardType: TextInputType.number,
+                              onChanged: (value) {
+                                print("${TAG}value: $value");
+                                context.read<ConversionBloc>().add(M1Changed(double.tryParse(value) ?? 0));
+                              },
+                            ),
+                            const Text(
+                              "Joules",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.grey, fontSize: 10),
+                            )
+                          ],
+                        )),
                         const SizedBox(width: 10),
-                        const Text('\n\n='),
+                        const Text('\n='),
                         const SizedBox(width: 10),
                         Expanded(
-                          child: TextField(
-                            controller: controllerM,
-                            decoration: const InputDecoration(labelText: "m"),
-                            keyboardType: TextInputType.number,
-                            onChanged: (value) {
-                              context.read<ConversionBloc>().add(M2Changed(double.tryParse(value) ?? 0));
-                            },
-                          ),
-                        ),
+                            child: Column(
+                          children: [
+                            TextField(
+                              controller: controllerM,
+                              decoration: const InputDecoration(
+                                label: Center(
+                                  child: Text(
+                                    "m",
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                              keyboardType: TextInputType.number,
+                              onChanged: (value) {
+                                context.read<ConversionBloc>().add(M2Changed(double.tryParse(value) ?? 0));
+                              },
+                            ),
+                            const Text(
+                              "kilograms",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.grey, fontSize: 10),
+                            )
+                          ],
+                        )),
                         const SizedBox(width: 10),
-                        const Text('\n\nx'),
+                        const Text('\nx'),
                         const SizedBox(width: 10),
                         const Column(
                           children: [
                             Text("c²"),
-                            Text("Speed of Light\nSquared"),
+                            Text("Speed of Light\nSquared", textAlign: TextAlign.center),
+                            Text(
+                              "meters per second",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.grey, fontSize: 10),
+                            )
                           ],
                         ),
                       ],
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                   ],
                 ),
               );

@@ -18,24 +18,20 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Camera & QR Scanner'),
+        title: const Text('Camera & QR Scanner'),
       ),
       body: SingleChildScrollView(  // Ensure content can scroll if needed
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 40.0),
+          padding: const EdgeInsets.symmetric(horizontal: 40.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,  // Center vertically
             crossAxisAlignment: CrossAxisAlignment.center,  // Center horizontally
             children: [
-              SizedBox(height: screenHeight * 0.15),  // Add space from the top (optional)
+              //SizedBox(height: screenHeight * 0.15),  // Add space from the top (optional)
 
               // RaisedGradientButton 1
               RaisedGradientButton(
-                child: Text(
-                  'TAKE PHOTO',
-                  style: TextStyle(color: Colors.white, fontSize: 40),
-                ),
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   colors: <Color>[Colors.green, Colors.black],
                 ),
                 onPressed: () => Navigator.push(
@@ -45,16 +41,16 @@ class HomePage extends StatelessWidget {
                 borderRadius: 12.0,
                 width: screenWidth * 0.8,  // Adjust width to prevent stretching
                 height: buttonHeight,
-              ),
-              SizedBox(height: 20),
-
-              // RaisedGradientButton 2
-              RaisedGradientButton(
-                child: Text(
-                  'SCAN QR CODE',
+                child: const Text(
+                  'TAKE PHOTO',
+                  textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.white, fontSize: 40),
                 ),
-                gradient: LinearGradient(
+              ),
+              const SizedBox(height: 20),
+              // RaisedGradientButton 2
+              RaisedGradientButton(
+                gradient: const LinearGradient(
                   colors: <Color>[Colors.green, Colors.black],
                 ),
                 onPressed: () => Navigator.push(
@@ -64,14 +60,15 @@ class HomePage extends StatelessWidget {
                 borderRadius: 12.0,
                 width: screenWidth * 0.8,  // Adjust width to prevent stretching
                 height: buttonHeight,
-              ),
-              SizedBox(height: 20),
-              RaisedGradientButton(
-                child: Text(
-                  'ENERGY MASS CONVERT',
+                child: const Text(
+                  'SCAN QR CODE',
+                  textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.white, fontSize: 40),
                 ),
-                gradient: LinearGradient(
+              ),
+              const SizedBox(height: 20),
+              RaisedGradientButton(
+                gradient: const LinearGradient(
                   colors: <Color>[Colors.green, Colors.black],
                 ),
                 onPressed: () => Navigator.push(
@@ -81,6 +78,11 @@ class HomePage extends StatelessWidget {
                 borderRadius: 12.0,
                 width: screenWidth * 0.8,  // Adjust width to prevent stretching
                 height: buttonHeight,
+                child: const Text(
+                  'ENERGY MASS CONVERT',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.white, fontSize: 40),
+                ),
               ),
               SizedBox(height: screenHeight * 0.15),  // Add space from the bottom (optional)
             ],
