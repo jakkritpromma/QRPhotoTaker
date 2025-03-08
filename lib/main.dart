@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:qrphototaker/bloc/qr_scanner_bloc.dart';
-import 'package:qrphototaker/bloc/camera_bloc.dart';
-import 'package:qrphototaker/ui/home_page.dart';
+import 'package:qrphototaker/bloc/QrScannerBloc.dart';
+import 'package:qrphototaker/bloc/CameraBloc.dart';
+import 'package:qrphototaker/ui/HomePage.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
 

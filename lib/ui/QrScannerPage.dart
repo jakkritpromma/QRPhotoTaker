@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qrphototaker/bloc/qr_scanner_bloc.dart';
+import 'package:qrphototaker/bloc/QrScannerBloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:share_plus/share_plus.dart';

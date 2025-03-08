@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:qrphototaker/ui/ConversionPage.dart';
 import 'package:qrphototaker/ui/widget/RaisedGradientButton.dart';
-import 'package:qrphototaker/ui/camera_page.dart';
-import 'package:qrphototaker/ui/qr_scanner_page.dart';
+import 'package:qrphototaker/ui/CameraPage.dart';
+import 'package:qrphototaker/ui/QrScannerPage.dart';
 
 class HomePage extends StatelessWidget {
   final List<CameraDescription> cameras;
@@ -64,7 +65,23 @@ class HomePage extends StatelessWidget {
                 width: screenWidth * 0.8,  // Adjust width to prevent stretching
                 height: buttonHeight,
               ),
-
+              SizedBox(height: 20),
+              RaisedGradientButton(
+                child: Text(
+                  'ENERGY MASS CONVERT',
+                  style: TextStyle(color: Colors.white, fontSize: 40),
+                ),
+                gradient: LinearGradient(
+                  colors: <Color>[Colors.green, Colors.black],
+                ),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ConversionPage()),
+                ),
+                borderRadius: 12.0,
+                width: screenWidth * 0.8,  // Adjust width to prevent stretching
+                height: buttonHeight,
+              ),
               SizedBox(height: screenHeight * 0.15),  // Add space from the bottom (optional)
             ],
           ),

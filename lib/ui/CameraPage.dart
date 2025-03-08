@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:qrphototaker/bloc/camera_bloc.dart';
+import 'package:qrphototaker/bloc/CameraBloc.dart';
 import 'package:qrphototaker/ui/widget/RaisedGradientButton.dart';
 import 'dart:io';
 import 'package:photo_manager/photo_manager.dart';
@@ -58,14 +58,14 @@ class CameraPage extends StatelessWidget {
                                   final picker = ImagePicker();
                                   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
                                   if (pickedFile != null) {
-                                    print("Selected Image Path: ${pickedFile.path}");
+                                    print("${TAG}Selected Image Path: ${pickedFile.path}");
                                     final barcodeScanner = BarcodeScanner();
                                     try {
                                       final inputImage = InputImage.fromFilePath(pickedFile.path);
                                       final barcodes = await barcodeScanner.processImage(inputImage);
                                       if (barcodes.isNotEmpty) {
                                         for (Barcode barcode in barcodes) {
-                                          print('Detected QR Code: ${barcode.rawValue}');
+                                          print("${TAG}Detected QR Code: ${barcode.rawValue}");
                                           showDialog(
                                             context: context,
                                             builder: (context) => AlertDialog(
@@ -110,7 +110,7 @@ class CameraPage extends StatelessWidget {
                                           );
                                         }
                                       } else {
-                                        print('No QR Code detected.');
+                                        print("${TAG}No QR Code detected.");
                                         showDialog(
                                           context: context,
                                           builder: (context) => AlertDialog(
@@ -126,7 +126,7 @@ class CameraPage extends StatelessWidget {
                                         );
                                       }
                                     } catch (e) {
-                                      print('Error detecting QR Code: $e');
+                                      print("${TAG}Error detecting QR Code: $e");
                                       showDialog(
                                         context: context,
                                         builder: (context) => AlertDialog(
