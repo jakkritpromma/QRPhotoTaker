@@ -1,6 +1,6 @@
 # qrphototaker
 
-A Flutter project for taking photos, reading QR codes and sharing the QR codes with the Bloc statement management
+A Flutter project for taking photos, reading QR codes, sharing the QR codes and a special feature for converting energy and mass with the Bloc statement management
 
 Privacy Policy
 [qrphototaker]
