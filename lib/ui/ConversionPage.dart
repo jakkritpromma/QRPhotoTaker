@@ -105,7 +105,7 @@ class ConversionPage extends StatelessWidget {
                         const Column(
                           children: [
                             Text("c²"),
-                            Text("Speed of Light\nSquared", textAlign: TextAlign.center),
+                            Text("Speed of Light\nSquared", textAlign: TextAlign.center, style: TextStyle(fontSize: 11),),
                             Text(
                               "meters per second",
                               textAlign: TextAlign.center,
