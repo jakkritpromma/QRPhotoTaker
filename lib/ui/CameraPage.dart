@@ -18,7 +18,7 @@ class CameraPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final cameraBloc = BlocProvider.of<CameraBloc>(context);
     return Scaffold(
-      appBar: null, // Hide the default AppBar.
+      backgroundColor: Colors.black,
       body: BlocBuilder<CameraBloc, CameraState>(
         builder: (context, state) {
           if (state is CameraInitial) {
