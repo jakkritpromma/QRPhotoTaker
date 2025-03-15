@@ -236,17 +236,10 @@ class CameraPage extends StatelessWidget {
   }
 
   Future<void> checkCameraPermission(BuildContext context) async {
-    final status = await Permission.camera.status;
+    final status = await Permission.camera.request(); // Always request permission
 
-    if (status.isDenied) {
-      // Request permission only if not asked before
-      final newStatus = await Permission.camera.request();
-      if (newStatus.isDenied) {
-        // If user denies again, show custom dialog
-        showPermissionDeniedDialog(context);
-      }
-    } else if (status.isPermanentlyDenied) {
-      // User permanently denied permission, show custom dialog
+    if (status.isDenied || status.isPermanentlyDenied) {
+      // Show dialog only if permission is denied after the system prompt
       showPermissionDeniedDialog(context);
     }
   }
