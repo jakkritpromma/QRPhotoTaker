@@ -24,7 +24,7 @@ android {
         minSdk = 21 // Set minimum SDK to match the lowest supported by your libraries
         targetSdk = 34 // Ensure this matches `compileSdk` to avoid compatibility issues
         versionCode = 1
-        versionName = "1.0"
+        versionName = "2.2"
     }
 
     signingConfigs {
