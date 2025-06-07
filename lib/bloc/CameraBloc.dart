@@ -6,56 +6,69 @@ import 'package:flutter/services.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+// Camera Events
 abstract class CameraEvent {}
 
 class InitializeCamera extends CameraEvent {}
 
 class TakePhoto extends CameraEvent {}
 
+class TogglePreview extends CameraEvent {} // New event to start/stop previewing
+
+// Camera States
 abstract class CameraState {}
 
 class CameraInitial extends CameraState {}
 
 class CameraInitialized extends CameraState {
   final CameraController controller;
-  final AssetEntity latestPhoto;
-  CameraInitialized(this.controller, this.latestPhoto);
+  final AssetEntity? latestPhoto;
+  final bool isPreviewing; // Added preview tracking flag
+
+  CameraInitialized(this.controller, this.latestPhoto, {this.isPreviewing = true});
 }
 
 class PhotoCaptured extends CameraState {
   final XFile photo;
+
   PhotoCaptured(this.photo);
 }
 
+// CameraBloc Implementation
 class CameraBloc extends Bloc<CameraEvent, CameraState> {
   final String TAG = "CameraBloc MyLog ";
   final List<CameraDescription> cameras;
   CameraController? _controller;
   AssetEntity? _latestPhoto;
+  bool _isPreviewing = false;
 
   CameraBloc(this.cameras) : super(CameraInitial()) {
     on<InitializeCamera>(_initializeCamera);
     on<TakePhoto>(_takePhoto);
+    on<TogglePreview>(_togglePreview);
   }
 
   Future<void> _initializeCamera(InitializeCamera event, Emitter<CameraState> emit) async {
+    if (cameras.isEmpty) {
+      emit(CameraInitial());
+      return;
+    }
+
     _controller = CameraController(cameras.first, ResolutionPreset.high);
     await _controller!.initialize();
+    _isPreviewing = true;
 
     final PermissionState ps = await PhotoManager.requestPermissionExtend();
     if (ps.isAuth || await Permission.photos.request().isGranted) {
-      await updatePhoto();
-    } else if (ps == PermissionState.denied) {
-      print(TAG + 'Permission denied. Please allow access in the app settings.');
-    } else if (ps == PermissionState.limited) {
-      print(TAG + 'Limited access to photos.');
+      await _updateLatestPhoto();
     } else {
-      print(TAG + 'Please allow access in the app settings.');
+      print(TAG + 'Permission denied. Please allow access in the app settings.');
     }
-    emit(CameraInitialized(_controller!, _latestPhoto!));
+
+    emit(CameraInitialized(_controller!, _latestPhoto, isPreviewing: _isPreviewing));
   }
 
-  Future<void> updatePhoto() async {
+  Future<void> _updateLatestPhoto() async {
     List<AssetPathEntity> albums = await PhotoManager.getAssetPathList(
       type: RequestType.image,
       hasAll: true,
@@ -63,7 +76,6 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
 
     if (albums.isNotEmpty) {
       List<AssetEntity> photos = await albums[0].getAssetListRange(start: 0, end: 1);
-
       if (photos.isNotEmpty) {
         _latestPhoto = photos.first;
       }
@@ -72,30 +84,28 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
 
   Future<void> _takePhoto(TakePhoto event, Emitter<CameraState> emit) async {
     try {
+      if (_controller == null || !_controller!.value.isInitialized) return;
+
       final XFile file = await _controller!.takePicture();
       final List<int> fileBytes = await file.readAsBytes();
       final String fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
       final filePath = '/storage/emulated/0/DCIM/Camera/$fileName';
 
       if (Platform.isAndroid) {
-        await saveFileToDCIM(fileName, fileBytes);
-        print('$TAG Scanning file at path: $filePath');
+        await _saveFileToDCIM(fileName, fileBytes);
         await _scanMedia(filePath);
+      } else if (Platform.isIOS) {
+        await _saveFileToGallery(fileBytes, fileName);
       }
 
-      if (Platform.isIOS) {
-        await saveFileToGallery(fileBytes, fileName);
-      }
-
-      //emit(PhotoCaptured(file));
-      updatePhoto();
-      emit(CameraInitialized(_controller!, _latestPhoto!));
+      await _updateLatestPhoto();
+      emit(CameraInitialized(_controller!, _latestPhoto, isPreviewing: _isPreviewing));
     } catch (e) {
       print('$TAG Error capturing photo: $e');
     }
   }
 
-  Future<void> saveFileToGallery(List<int> fileBytes, String fileName) async {
+  Future<void> _saveFileToGallery(List<int> fileBytes, String fileName) async {
     try {
       final permission = await PhotoManager.requestPermissionExtend();
       if (permission.isAuth) {
@@ -113,7 +123,7 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
     }
   }
 
-  Future<void> saveFileToDCIM(String fileName, List<int> fileBytes) async {
+  Future<void> _saveFileToDCIM(String fileName, List<int> fileBytes) async {
     final directory = Directory('/storage/emulated/0/DCIM/Camera');
     if (!directory.existsSync()) {
       directory.createSync(recursive: true);
@@ -125,17 +135,22 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
     await file.writeAsBytes(fileBytes);
 
     print('$TAG File saved at $filePath');
-    print('$TAG File exists after saving: ${file.existsSync()}');
   }
 
   Future<void> _scanMedia(String path) async {
     const platform = MethodChannel('com.jakkagaku.qrphototaker/media_scan');
     try {
-      print("$TAG Dart: Invoking media scan for path: $path");
       await platform.invokeMethod('scanFile', {'path': path});
       print("$TAG Dart: Media scanner invoked successfully");
     } catch (e) {
       print("$TAG Dart: Error invoking media scanner: $e");
+    }
+  }
+
+  Future<void> _togglePreview(TogglePreview event, Emitter<CameraState> emit) async {
+    if (state is CameraInitialized) {
+      _isPreviewing = !_isPreviewing;
+      emit(CameraInitialized(_controller!, _latestPhoto, isPreviewing: _isPreviewing));
     }
   }
 
