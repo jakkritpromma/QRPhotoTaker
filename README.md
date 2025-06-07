@@ -1,28 +1,60 @@
-# qrphototaker
+# QRPhotoTaker
 
-A Flutter project for taking photos, reading QR codes, sharing the QR codes and a special feature for converting energy and mass with the Bloc statement management
+A **Flutter project** for:
 
-Privacy Policy
-[qrphototaker]
+- Taking photos  
+- Reading QR codes  
+- Sharing QR codes  
+- A special feature for converting **energy and mass**  
+- Using **Bloc state management**
 
-Effective Date: [1 January 2025]
+---
 
-1. Introduction
-Welcome to [qrphototaker]! This Privacy Policy explains how we collect, use, disclose, and protect your information when you use our mobile application ([qrphototaker]), available on Google Play Store. Please read this policy carefully to understand our views and practices regarding your data.
+## Privacy Policy
 
-2. Information 
-Users' and devices' information are not collected and not shared.
+### QRPhotoTaker
 
-3. Your Rights
-Your rights depend on your location.
-For more information, contact us at [jakkagu@gmaul.com].
+**Effective Date:** January 1, 2025
 
-4. Children's Privacy
-Our app is not intended for use by children under the age of [13/16]. We do not knowingly collect personal information from children. 
+---
 
-5. Changes to This Privacy Policy
-We may update this Privacy Policy from time to time. Any changes will be posted on this page.
+### Introduction
 
-6. Contact Us
-If you have any questions about this Privacy Policy, please contact us:
-Email: [jakkagaku@gmail.com]
+Welcome to **QRPhotoTaker**!  
+This Privacy Policy explains how we collect, use, disclose, and protect your information when you use our mobile application (**QRPhotoTaker**), available on the Google Play Store.
+
+Please read this policy carefully to understand our views and practices regarding your data.
+
+---
+
+### Information
+
+- We **do not collect or share** users' or devices' information.
+
+---
+
+### Your Rights
+
+Your rights depend on your location.  
+For more information, contact us at [jakkagu@gmaul.com](mailto:jakkagu@gmaul.com).
+
+---
+
+### Children's Privacy
+
+Our app is **not intended for children under the age of 13 or 16**, depending on your location.  
+We **do not knowingly collect personal information** from children.
+
+---
+
+### Changes to This Privacy Policy
+
+We may update this Privacy Policy from time to time.  
+Any changes will be posted on this page.
+
+---
+
+### Contact Us
+
+If you have any questions about this Privacy Policy, please contact us:  
+📧 [jakkagaku@gmail.com](mailto:jakkagaku@gmail.com)
